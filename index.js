@@ -29,7 +29,12 @@ const sessionOptions = {
   resave: false,
   saveUninitialized: false,
 };
-if (process.env.SERVER_ENV !== "development") {
+// Cross-origin browser clients (e.g. Vercel → Render) need SameSite=None; Secure.
+// Render sets NODE_ENV=production even if SERVER_ENV was copied as "development" by mistake.
+const useCrossSiteSessionCookies =
+  process.env.NODE_ENV === "production" ||
+  process.env.SERVER_ENV === "production";
+if (useCrossSiteSessionCookies) {
   app.set("trust proxy", 1);
   sessionOptions.proxy = true;
   sessionOptions.cookie = {
