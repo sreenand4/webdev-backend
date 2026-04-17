@@ -5,6 +5,7 @@ import Hello from "./Hello.js";
 import Lab5 from "./Lab5/index.js";
 import cors from "cors";
 import session from "express-session";
+import MongoStore from "connect-mongo";
 import db from "./Kambaz/Database/index.js";
 
 const CONNECTION_STRING =
@@ -28,13 +29,9 @@ const sessionOptions = {
   secret: process.env.SESSION_SECRET || "kambaz",
   resave: false,
   saveUninitialized: false,
+  store: MongoStore.create({ mongoUrl: CONNECTION_STRING }),
 };
-// Cross-origin browser clients (e.g. Vercel → Render) need SameSite=None; Secure.
-// Render sets NODE_ENV=production even if SERVER_ENV was copied as "development" by mistake.
-const useCrossSiteSessionCookies =
-  process.env.NODE_ENV === "production" ||
-  process.env.SERVER_ENV === "production";
-if (useCrossSiteSessionCookies) {
+if (process.env.SERVER_ENV !== "development") {
   app.set("trust proxy", 1);
   sessionOptions.proxy = true;
   sessionOptions.cookie = {
