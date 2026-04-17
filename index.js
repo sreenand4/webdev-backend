@@ -37,6 +37,8 @@ if (process.env.SERVER_ENV !== "development") {
   sessionOptions.cookie = {
     sameSite: "none",
     secure: true,
+    // Chrome third-party cookie rules: cross-site (Vercel → Render) needs CHIPS.
+    partitioned: true,
   };
 }
 app.use(session(sessionOptions));
